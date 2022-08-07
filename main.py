@@ -1,3 +1,5 @@
+# Only for testing
+
 from turtle import pos
 from fastapi import FastAPI, status
 import psycopg
