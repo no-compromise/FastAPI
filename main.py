@@ -1,5 +1,6 @@
 # Only for testing
 
+from fastapi.exceptions import HTTPException
 from turtle import pos
 from fastapi import FastAPI, status
 import psycopg
@@ -41,6 +42,16 @@ def get_posts():
     return {"data": posts}
 
 
+@app.get("/posts/{id}")
+def get_posts_id(id: int):
+    post = cursor.execute("""SELECT * FROM posts WHERE id = %s""", [id]).fetchone()
+    if not post:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Post not found..."
+        )
+    return {"data": post}
+
+
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
 def post_posts(post: Post):
     post = cursor.execute(
@@ -49,3 +60,9 @@ def post_posts(post: Post):
     ).fetchone()
     conn.commit()
     return {"data": post}
+
+
+@app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def pos_del(id: int):
+    cursor.execute("""DELETE FROM posts WHERE id = %s """, [id])
+    conn.commit()
