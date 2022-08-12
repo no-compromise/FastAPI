@@ -1,24 +1,16 @@
 # Only for testing
 
+from typing import Optional
 from fastapi.exceptions import HTTPException
 from turtle import pos
-from fastapi import FastAPI, status
-import psycopg
+from fastapi import FastAPI, status, Depends
 from pydantic import BaseModel
 from psycopg.rows import dict_row
+from sqlalchemy.orm import Session
+import models
+from database import engine, SessionLocal, get_db
 
-try:
-    conn = psycopg.connect(
-        host="localhost",
-        dbname="rapidapi",
-        user="postgres",
-        password="",
-        row_factory=dict_row,
-    )
-    cursor = conn.cursor(row_factory=dict_row)
-    print("Connection to DB OK!")
-except Exception as error:
-    print(error)
+models.Base.metadata.create_all(bind=engine)
 
 
 app = FastAPI()
@@ -36,9 +28,8 @@ def get_root():
 
 
 @app.get("/posts")
-def get_posts():
-    posts = cursor.execute("""SELECT * FROM posts""").fetchall()
-    # print(posts)
+def get_posts(db: Session = Depends(get_db)):
+    posts = db.query(models.Post).all()
     return {"data": posts}
 
 

@@ -1,9 +1,10 @@
-/Include
+/include
 /Lib
 /pyvenv.cfg
 /Scripts
 /.vscode
 /__pycache__
+/app/__pycache__
 /bin
 /lib
 /lib64
