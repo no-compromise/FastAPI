@@ -64,6 +64,9 @@ def pos_del(id: int, db: Session = Depends(get_db)):
     db.commit()
 
 
+# comment
+
+
 @app.put("/posts/{id}")
 def update_post(id: int, u_post: Post, db: Session = Depends(get_db)):
     post_query = db.query(models.Post).filter(models.Post.id == id)
