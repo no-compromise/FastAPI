@@ -35,25 +35,20 @@ def get_posts(db: Session = Depends(get_db)):
 
 @app.get("/posts/{id}")
 def get_posts_id(id: int):
-    post = cursor.execute("""SELECT * FROM posts WHERE id = %s""", [id]).fetchone()
-    if not post:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Post not found..."
-        )
-    return {"data": post}
+    # post = cursor.execute("""SELECT * FROM posts WHERE id = %s""", [id]).fetchone()
+    # if not post:
+    #    raise HTTPException(
+    #        status_code=status.HTTP_404_NOT_FOUND, detail="Post not found..."
+    #    )
+    return {"data": "post"}
 
 
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
 def post_posts(post: Post):
-    post = cursor.execute(
-        """INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING * """,
-        (post.title, post.content, post.published),
-    ).fetchone()
-    conn.commit()
-    return {"data": post}
+
+    return {"data": "post"}
 
 
 @app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def pos_del(id: int):
-    cursor.execute("""DELETE FROM posts WHERE id = %s """, [id])
-    conn.commit()
+    pass
