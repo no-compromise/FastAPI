@@ -1,11 +1,10 @@
 from statistics import mode
-from typing import Optional
+from typing import Optional, List
 from fastapi.exceptions import HTTPException
 from turtle import pos
 from fastapi import FastAPI, status, Depends
-from pydantic import BaseModel
 from sqlalchemy.orm import Session
-import models
+import models, schemas
 from database import engine, SessionLocal, get_db
 
 models.Base.metadata.create_all(bind=engine)
@@ -14,24 +13,18 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 
-class Post(BaseModel):
-    title: str
-    content: str
-    published: bool = True
-
-
 @app.get("/")
 def get_root():
     return {"data": "root page"}
 
 
-@app.get("/posts")
+@app.get("/posts", response_model=List[schemas.PostResponse])
 def get_posts(db: Session = Depends(get_db)):
     posts = db.query(models.Post).all()
-    return {"data": posts}
+    return posts
 
 
-@app.get("/posts/{id}")
+@app.get("/posts/{id}", response_model=schemas.PostResponse)
 def get_posts_id(id: int, db: Session = Depends(get_db)):
     post = db.query(models.Post).filter(models.Post.id == id).first()
     if not post:
@@ -39,16 +32,18 @@ def get_posts_id(id: int, db: Session = Depends(get_db)):
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Post with id: {id} not found!",
         )
-    return {"data": post}
+    return post
 
 
-@app.post("/posts", status_code=status.HTTP_201_CREATED)
-def post_posts(post: Post, db: Session = Depends(get_db)):
+@app.post(
+    "/posts", status_code=status.HTTP_201_CREATED, response_model=schemas.PostResponse
+)
+def post_posts(post: schemas.CreatePost, db: Session = Depends(get_db)):
     new_post = models.Post(**post.dict())
     db.add(new_post)
     db.commit()
     db.refresh(new_post)
-    return {"data": new_post}
+    return new_post
 
 
 @app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -68,7 +63,7 @@ def pos_del(id: int, db: Session = Depends(get_db)):
 
 
 @app.put("/posts/{id}")
-def update_post(id: int, u_post: Post, db: Session = Depends(get_db)):
+def update_post(id: int, u_post: schemas.PostBase, db: Session = Depends(get_db)):
     post_query = db.query(models.Post).filter(models.Post.id == id)
     post = post_query.first()
 
