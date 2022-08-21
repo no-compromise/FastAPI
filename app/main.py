@@ -1,11 +1,9 @@
-from statistics import mode
-from typing import Optional, List
+from typing import List
 from fastapi.exceptions import HTTPException
-from turtle import pos
 from fastapi import FastAPI, status, Depends
 from sqlalchemy.orm import Session
 import models, schemas
-from database import engine, SessionLocal, get_db
+from database import engine, get_db
 
 models.Base.metadata.create_all(bind=engine)
 
