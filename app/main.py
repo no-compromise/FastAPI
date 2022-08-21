@@ -1,9 +1,7 @@
-from typing import List
-from fastapi.exceptions import HTTPException
-from fastapi import FastAPI, status, Depends
-from sqlalchemy.orm import Session
-import models, schemas
-from database import engine, get_db
+from fastapi import FastAPI
+from . import models
+from .database import engine
+from .routers import post, user
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -11,63 +9,10 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 
+app.include_router(post.router)
+app.include_router(user.router)
+
+
 @app.get("/")
 def get_root():
     return {"data": "root page"}
-
-
-@app.get("/posts", response_model=List[schemas.PostResponse])
-def get_posts(db: Session = Depends(get_db)):
-    posts = db.query(models.Post).all()
-    return posts
-
-
-@app.get("/posts/{id}", response_model=schemas.PostResponse)
-def get_posts_id(id: int, db: Session = Depends(get_db)):
-    post = db.query(models.Post).filter(models.Post.id == id).first()
-    if not post:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Post with id: {id} not found!",
-        )
-    return post
-
-
-@app.post(
-    "/posts", status_code=status.HTTP_201_CREATED, response_model=schemas.PostResponse
-)
-def post_posts(post: schemas.CreatePost, db: Session = Depends(get_db)):
-    new_post = models.Post(**post.dict())
-    db.add(new_post)
-    db.commit()
-    db.refresh(new_post)
-    return new_post
-
-
-@app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def pos_del(id: int, db: Session = Depends(get_db)):
-    post = db.query(models.Post).filter(models.Post.id == id)
-    if post.first() == None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Post with id: {id} not found",
-        )
-
-    post.delete(synchronize_session=False)
-    db.commit()
-
-
-# comment
-
-
-@app.put("/posts/{id}")
-def update_post(id: int, u_post: schemas.PostBase, db: Session = Depends(get_db)):
-    post_query = db.query(models.Post).filter(models.Post.id == id)
-    post = post_query.first()
-
-    if post == None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
-
-    post_query.update(u_post.dict(), synchronize_session=False)
-    db.commit()
-    return {"data": "Update OK!"}
