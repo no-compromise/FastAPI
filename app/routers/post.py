@@ -4,16 +4,16 @@ from sqlalchemy.orm import Session
 from ..database import engine, get_db
 from typing import List
 
-router = APIRouter()
+router = APIRouter(prefix="/posts")
 
 
-@router.get("/posts", response_model=List[schemas.PostResponse])
+@router.get("/", response_model=List[schemas.PostResponse])
 def get_posts(db: Session = Depends(get_db)):
     posts = db.query(models.Post).all()
     return posts
 
 
-@router.get("/posts/{id}", response_model=schemas.PostResponse)
+@router.get("/{id}", response_model=schemas.PostResponse)
 def get_posts_id(id: int, db: Session = Depends(get_db)):
     post = db.query(models.Post).filter(models.Post.id == id).first()
     if not post:
@@ -25,7 +25,7 @@ def get_posts_id(id: int, db: Session = Depends(get_db)):
 
 
 @router.post(
-    "/posts", status_code=status.HTTP_201_CREATED, response_model=schemas.PostResponse
+    "/", status_code=status.HTTP_201_CREATED, response_model=schemas.PostResponse
 )
 def post_posts(post: schemas.CreatePost, db: Session = Depends(get_db)):
     new_post = models.Post(**post.dict())
@@ -35,7 +35,7 @@ def post_posts(post: schemas.CreatePost, db: Session = Depends(get_db)):
     return new_post
 
 
-@router.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def pos_del(id: int, db: Session = Depends(get_db)):
     post = db.query(models.Post).filter(models.Post.id == id)
     if post.first() == None:
@@ -51,7 +51,7 @@ def pos_del(id: int, db: Session = Depends(get_db)):
 # comment
 
 
-@router.put("/posts/{id}")
+@router.put("/{id}")
 def update_post(id: int, u_post: schemas.PostBase, db: Session = Depends(get_db)):
     post_query = db.query(models.Post).filter(models.Post.id == id)
     post = post_query.first()
