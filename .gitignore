@@ -3,8 +3,7 @@
 /pyvenv.cfg
 /Scripts
 /.vscode
-/__pycache__
-/app/__pycache__
+__pycache__
 /bin
 /lib
 /lib64
