@@ -7,7 +7,7 @@ from typing import List
 router = APIRouter(prefix="/posts")
 
 
-@router.get("/", response_model=List[schemas.PostResponse])
+@router.get("", response_model=List[schemas.PostResponse])
 def get_posts(db: Session = Depends(get_db)):
     posts = db.query(models.Post).all()
     return posts
