@@ -25,7 +25,7 @@ def get_posts_id(id: int, db: Session = Depends(get_db)):
 
 
 @router.post(
-    "/", status_code=status.HTTP_201_CREATED, response_model=schemas.PostResponse
+    "", status_code=status.HTTP_201_CREATED, response_model=schemas.PostResponse
 )
 def post_posts(
     post: schemas.CreatePost,
