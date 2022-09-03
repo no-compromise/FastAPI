@@ -1,4 +1,3 @@
-from turtle import pos, update
 from .. import models, schemas, oath2
 from fastapi import FastAPI, status, Depends, HTTPException, Response, APIRouter
 from sqlalchemy.orm import Session
