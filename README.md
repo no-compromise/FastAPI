@@ -6,4 +6,6 @@ pgadmin:
 joly007@gmail.com
 pgadmin4
 
-dddd
+
+Must have .env file in root!
+
