@@ -29,6 +29,6 @@ app.include_router(auth.router)
 app.include_router(vote.router)
 
 
-@app.get("/", status_code=status.HTTP_404_NOT_FOUND)
+@app.get("/", status_code=status.HTTP_405_METHOD_NOT_ALLOWED)
 def get_root():
-    return {}
+    pass
