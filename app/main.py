@@ -12,7 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-origins = ["http://localhost", "http://localhost:8080", "https://www.google.com"]
+origins = ["http://localhost", "http://localhost:8080"]
 
 app.add_middleware(
     CORSMiddleware,
